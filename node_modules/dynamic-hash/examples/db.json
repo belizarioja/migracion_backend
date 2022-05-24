@@ -1,0 +1,34 @@
+{
+  "users": [
+    {
+      "username": "test1",
+      "password": "47ec2dd791e31e2ef2076caf64ed9b3d",
+      "fullName":"test me 1",
+      "email": "test1@test.com"
+    },
+    {
+      "username": "test2",
+      "password": "47ec2dd791e31e2ef2076caf64ed9b3d",
+      "fullName":"test me 2",
+      "email": "test2@test.com"
+    },
+    {
+      "username": "test3",
+      "password": "47ec2dd791e31e2ef2076caf64ed9b3d",
+      "fullName":"test me 3",
+      "email": "test3@test.com"
+    },
+    {
+      "username": "test4",
+      "password": "47ec2dd791e31e2ef2076caf64ed9b3d",
+      "fullName":"test me 4",
+      "email": "test4@test.com"
+    },
+    {
+      "username": "test5",
+      "password": "47ec2dd791e31e2ef2076caf64ed9b3d",
+      "fullName":"test me 5",
+      "email": "test5@test.com"
+    }
+  ]
+}
