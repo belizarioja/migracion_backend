@@ -15,7 +15,7 @@ module.exports = {
         // return arreglo;
         return resultados.rows;
     },
-    async crearencuesta (tx_encuesta, co_tipo_encuesta) {
+    async crearencuesta (tx_encuesta) {
         const sqlmax = "select MAX(co_encuesta) from t_encuestas "
         const res = await conexion.query(sqlmax)
         let co_encuesta = 1
@@ -23,8 +23,8 @@ module.exports = {
             co_encuesta = Number(res.rows[0].max) + 1
         }
         fe_encuesta = moment().format('YYYY-MM-DD HH:mm:ss')
-        const sql = "insert into t_encuestas (co_encuesta, tx_encuesta, co_tipo_encuesta, fe_encuesta, in_estatus, in_activa) values ($1, $2, $3, $4, 1, 1)";
-        const resultados = await conexion.query(sql, [co_encuesta, tx_encuesta, co_tipo_encuesta, fe_encuesta])
+        const sql = "insert into t_encuestas (co_encuesta, tx_encuesta, fe_encuesta, in_estatus, in_activa) values ($1, $2, $3, 1, 1)";
+        const resultados = await conexion.query(sql, [co_encuesta, tx_encuesta, fe_encuesta])
         return resultados
     }
 

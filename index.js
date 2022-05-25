@@ -94,23 +94,6 @@ app.get(SERVIDOR + '/listarroles', (req, res) => {
     })
 
 })
-app.get(SERVIDOR + '/listarsedes', (req, res) => {
-    sedemodel.listarsedes().then(resp => {
-        if (resp) {
-            res.json({
-                message: "Listado de sedes con Exito",
-                resp,
-                status: 200
-            })
-        }
-    }).catch(err => {
-        res.json({
-            message: "Error listando sedes " + err,
-            status: 500
-        })
-    })
-
-})
 app.get(SERVIDOR + '/listarencuestas', (req, res) => {
     encuestamodel.listarencuestas().then(resp => {
         if (resp) {
@@ -129,29 +112,14 @@ app.get(SERVIDOR + '/listarencuestas', (req, res) => {
 
 })
 app.post(SERVIDOR + '/crearencuesta', (req, res) => {
-    const { tx_encuesta, co_tipo_encuesta } = req.body;
-    encuestamodel.crearencuesta(tx_encuesta, co_tipo_encuesta).then(resp => {
+    const { tx_encuesta } = req.body;
+    encuestamodel.crearencuesta(tx_encuesta).then(resp => {
         if (resp) {
             res.status(200).send('Encuesta creada con éxito')
         }
     }).catch(err => {
         res.json({
             message: "Error creando encuesta " + err,
-            status: 500
-        })
-    })
-
-})
-
-app.post(SERVIDOR + '/crearsede', (req, res) => {
-    const { tx_sede } = req.body;
-    sedemodel.crearsede(tx_sede).then(resp => {
-        if (resp) {
-            res.status(200).send('Sede creada con éxito')
-        }
-    }).catch(err => {
-        res.json({
-            message: "Error creando sede " + err,
             status: 500
         })
     })
@@ -332,8 +300,8 @@ app.post(SERVIDOR + '/mostrardetalles', (req, res) => {
 
 })
 app.post(SERVIDOR + '/graficar', (req, res) => {
-    const { co_encuesta, co_seccion, co_topico, co_sede } = req.body;
-    resultadomodel.graficar(co_encuesta, co_seccion, co_topico, co_sede).then(resp => {
+    const { co_encuesta, co_seccion, co_topico } = req.body;
+    resultadomodel.graficar(co_encuesta, co_seccion, co_topico).then(resp => {
         if (resp) {
             res.json({
                 message: "Resultados de graficas con Exito",
@@ -357,7 +325,7 @@ app.get(SERVIDOR + '/', function (req, res) {
 });
 
 // const PORT = process.env.PORT
-const PORT = config.PORT || 4004
+const PORT = config.PORT || 4005
 
 app.listen(PORT, () => {
     console.log(`Servidor ejecutando en puerto ${PORT}.`)

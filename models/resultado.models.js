@@ -13,7 +13,6 @@ module.exports = {
             const nu_valor = resultados[i].nu_valor
             const tx_valor = resultados[i].tx_valor
             const co_usuario = resultados[i].co_usuario
-            const co_sede = resultados[i].co_sede
 
             const sqlmax = "select MAX(co_resultado) from t_resultados where co_encuesta = $1 and co_seccion = $2 and co_topico = $3 "
             const res = await conexion.query(sqlmax, [co_encuesta, co_seccion, co_topico])
@@ -23,16 +22,17 @@ module.exports = {
                 co_resultado = Number(res.rows[0].max) + 1
             }
 
-            const sqlitem = "insert into t_resultados (co_encuesta, co_seccion, co_topico, co_tipo_topico, nu_valor, tx_valor, co_usuario, fe_resultado, co_sede, co_resultado) "
-            const valuesitem = " values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
-            await conexion.query(sqlitem + valuesitem, [co_encuesta, co_seccion, co_topico, co_tipo_topico, nu_valor, tx_valor, co_usuario, fe_resultado, co_sede, co_resultado])
+            const sqlitem = "insert into t_resultados (co_encuesta, co_seccion, co_topico, co_tipo_topico, nu_valor, tx_valor, co_usuario, fe_resultado, co_resultado) "
+            const valuesitem = " values ($1, $2, $3, $4, $5, $6, $7, $8, $9)"
+            await conexion.query(sqlitem + valuesitem, [co_encuesta, co_seccion, co_topico, co_tipo_topico, nu_valor, tx_valor, co_usuario, fe_resultado, co_resultado])
 
         }
         return true
     },
     async mostrarresultados () {
-        const select = "SELECT a.co_resultado, a.co_encuesta, a.tx_valor as tipo, b.tx_valor as doc, c.tx_valor as nom1, d.tx_valor as nom2, e.tx_valor as ape1, f.tx_valor as ape2, g.tx_valor as sexo, h.nu_valor as edad "
-        const from = " FROM t_resultados a, t_resultados b, t_resultados c, t_resultados d, t_resultados e, t_resultados f, t_resultados g, t_resultados h "
+        let select = "SELECT a.co_resultado, a.co_encuesta, a.tx_valor as tipo, b.tx_valor as doc, c.tx_valor as nom1, d.tx_valor as nom2, "
+        select += " e.tx_valor as ape1, f.tx_valor as ape2, g.tx_valor as edocivil, h.nu_valor as edad, i.tx_valor as sexo, j.tx_valor as nivel, k.nu_valor as dias "
+        const from = " FROM t_resultados a, t_resultados b, t_resultados c, t_resultados d, t_resultados e, t_resultados f, t_resultados g, t_resultados h, t_resultados i, t_resultados j, t_resultados k "
         let where = " WHERE a.co_topico = 1 and a.co_seccion = 1 "
         where += " and b.co_topico = 2 and b.co_seccion = 1 and b.co_resultado = a.co_resultado "
         where += " and c.co_topico = 3 and c.co_seccion = 1 and c.co_resultado = a.co_resultado "
@@ -41,6 +41,9 @@ module.exports = {
         where += " and f.co_topico = 6 and f.co_seccion = 1 and f.co_resultado = a.co_resultado "
         where += " and g.co_topico = 7 and g.co_seccion = 1 and g.co_resultado = a.co_resultado "
         where += " and h.co_topico = 8 and h.co_seccion = 1 and h.co_resultado = a.co_resultado "
+        where += " and i.co_topico = 9 and i.co_seccion = 1 and i.co_resultado = a.co_resultado "
+        where += " and j.co_topico = 10 and j.co_seccion = 1 and j.co_resultado = a.co_resultado "
+        where += " and k.co_topico = 2 and k.co_seccion = 2 and k.co_resultado = a.co_resultado "
 
         const resultados = await conexion.query(select + from + where)
         return resultados.rows
@@ -56,13 +59,13 @@ module.exports = {
         const resultados = await conexion.query(select + from + where + order, [co_resultado])
         return resultados.rows
     },
-    async graficar (co_encuesta, co_seccion, co_topico, co_sede) {
+    async graficar (co_encuesta, co_seccion, co_topico) {
         const select = "SELECT a.tx_topico_item as texto, "
         const selectcount = "(SELECT count (*) FROM public.t_resultados WHERE "
-        const wherecount = " co_topico = a.co_topico and co_encuesta = a.co_encuesta and co_seccion = a.co_seccion and co_sede = $1 and nu_valor = a.nu_valor) as total "
+        const wherecount = " co_topico = a.co_topico and co_encuesta = a.co_encuesta and co_seccion = a.co_seccion and nu_valor = a.nu_valor) as total "
         const from = " FROM public.t_topico_items a where "
-        const where = " a.co_topico = $2 and a.co_encuesta = $3 and a.co_seccion = $4"
-        const resultados = await conexion.query(select + selectcount + wherecount + from + where, [co_sede, co_topico, co_encuesta, co_seccion])
+        const where = " a.co_topico = $1 and a.co_encuesta = $2 and a.co_seccion = $3"
+        const resultados = await conexion.query(select + selectcount + wherecount + from + where, [co_topico, co_encuesta, co_seccion])
         return resultados.rows
     }
 
