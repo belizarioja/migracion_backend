@@ -31,8 +31,8 @@ module.exports = {
     },
     async mostrarresultados () {
         let select = "SELECT a.co_resultado, a.co_encuesta, a.tx_valor as tipo, b.tx_valor as doc, c.tx_valor as nom1, d.tx_valor as nom2, "
-        select += " e.tx_valor as ape1, f.tx_valor as ape2, g.tx_valor as edocivil, h.nu_valor as edad, i.tx_valor as sexo, j.tx_valor as nivel, k.nu_valor as dias "
-        const from = " FROM t_resultados a, t_resultados b, t_resultados c, t_resultados d, t_resultados e, t_resultados f, t_resultados g, t_resultados h, t_resultados i, t_resultados j, t_resultados k "
+        select += " e.tx_valor as ape1, f.tx_valor as ape2, g.tx_valor as edocivil, h.nu_valor as edad, i.tx_valor as sexo, j.tx_valor as nivel, k.nu_valor as dias , l.tx_valor as origen "
+        const from = " FROM t_resultados a, t_resultados b, t_resultados c, t_resultados d, t_resultados e, t_resultados f, t_resultados g, t_resultados h, t_resultados i, t_resultados j, t_resultados k, t_resultados l "
         let where = " WHERE a.co_topico = 1 and a.co_seccion = 1 "
         where += " and b.co_topico = 2 and b.co_seccion = 1 and b.co_resultado = a.co_resultado "
         where += " and c.co_topico = 3 and c.co_seccion = 1 and c.co_resultado = a.co_resultado "
@@ -44,6 +44,7 @@ module.exports = {
         where += " and i.co_topico = 9 and i.co_seccion = 1 and i.co_resultado = a.co_resultado "
         where += " and j.co_topico = 10 and j.co_seccion = 1 and j.co_resultado = a.co_resultado "
         where += " and k.co_topico = 2 and k.co_seccion = 2 and k.co_resultado = a.co_resultado "
+        where += " and l.co_topico = 3 and l.co_seccion = 2 and l.co_resultado = a.co_resultado "
 
         const resultados = await conexion.query(select + from + where)
         return resultados.rows
