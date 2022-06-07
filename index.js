@@ -1,5 +1,8 @@
 const express = require('express')
+const fileUpload = require('express-fileupload')
 const cors = require('cors')
+var fs = require('fs')
+
 // const cookieParser = require("cookie-parser")
 // const dotenv = require('dotenv').config();
 
@@ -8,6 +11,7 @@ var corsOptions = {
     origin: '*'
 };
 // app.use(cookieParser())
+app.use(fileUpload())
 app.use(cors(corsOptions));
 // parse requests of content-type - application/json
 app.use(express.json());
@@ -247,9 +251,11 @@ app.post(SERVIDOR + '/editartopicositems', (req, res) => {
 })
 
 app.post(SERVIDOR + '/guardaresultados', (req, res) => {
-    const { resultados } = req.body;
-    resultadomodel.guardaresultados(resultados).then(resp => {
+    const { resultados, imgfile } = req.body
+    // console.log(resultados)
+    resultadomodel.guardaresultados(resultados, imgfile).then(resp => {
         if (resp) {
+            // console.log(resp)
             res.json({
                 message: "Resultados de encuestas guardados con Exito",
                 resp,
@@ -257,13 +263,14 @@ app.post(SERVIDOR + '/guardaresultados', (req, res) => {
             })
         }
     }).catch(err => {
+        // console.log(err)
         res.json({
             message: "Error guardando Resultados de encuestas >>>>>>> " + err,
             status: 500
         })
     })
-
 })
+
 app.get(SERVIDOR + '/mostrarresultados', (req, res) => {
     resultadomodel.mostrarresultados().then(resp => {
         if (resp) {
@@ -317,6 +324,18 @@ app.post(SERVIDOR + '/graficar', (req, res) => {
     })
 
 })
+app.get(SERVIDOR + '/files/:img', function (req, res) {
+    const img = req.params.img
+    const path = __dirname + '/files/' + img
+    if (fs.existsSync(path)) {
+        //const imgbase64 = fs.readFileSync(path, { encoding: 'base64' })
+        res.sendFile(path)
+        // res.status(200).send({ imgbase64, message: 'Imagen encontrada!' })
+    } else {
+        res.status(202).send({ message: 'Imagen no encontrada!' })
+    }
+
+});
 app.get(SERVIDOR + '/', function (req, res) {
     res.json({
         message: 'Conexion válida.',

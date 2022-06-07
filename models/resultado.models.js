@@ -1,27 +1,36 @@
 const { query } = require("express");
 const conexion = require("../config/conexion")
 const moment = require('moment')
+var fs = require('fs')
 
 module.exports = {
-    async guardaresultados (resultados) {
+    async guardaresultados (resultados, imgfile) {
         const fe_resultado = moment().format('YYYY-MM-DD HH:mm:ss')
+        let co_resultado = 1
         for (let i = 0; i < resultados.length; i++) {
             const co_encuesta = resultados[i].co_encuesta
             const co_seccion = resultados[i].co_seccion
             const co_topico = resultados[i].co_topico
             const co_tipo_topico = resultados[i].co_tipo_topico
             const nu_valor = resultados[i].nu_valor
-            const tx_valor = resultados[i].tx_valor
+            let tx_valor = resultados[i].tx_valor
             const co_usuario = resultados[i].co_usuario
 
-            const sqlmax = "select MAX(co_resultado) from t_resultados where co_encuesta = $1 and co_seccion = $2 and co_topico = $3 "
-            const res = await conexion.query(sqlmax, [co_encuesta, co_seccion, co_topico])
-
-            let co_resultado = 1
-            if (res.rows[0].max) {
-                co_resultado = Number(res.rows[0].max) + 1
+            if (co_tipo_topico !== 4) {
+                const sqlmax = "select MAX(co_resultado) from t_resultados where co_encuesta = $1 and co_seccion = $2 and co_topico = $3 "
+                const res = await conexion.query(sqlmax, [co_encuesta, co_seccion, co_topico])
+                co_resultado = 1
+                if (res.rows[0].max) {
+                    co_resultado = Number(res.rows[0].max) + 1
+                }
             }
-
+            if (tx_valor === 'photo') {
+                // console.log(co_resultado)
+                tx_valor = 'photo_' + co_resultado + '.png'
+                const fileData = imgfile.replace(/^data:image\/\w+;base64,/, "")
+                const buffer = Buffer.from(fileData, 'base64')
+                fs.writeFileSync('./files/' + tx_valor, buffer)
+            }
             const sqlitem = "insert into t_resultados (co_encuesta, co_seccion, co_topico, co_tipo_topico, nu_valor, tx_valor, co_usuario, fe_resultado, co_resultado) "
             const valuesitem = " values ($1, $2, $3, $4, $5, $6, $7, $8, $9)"
             await conexion.query(sqlitem + valuesitem, [co_encuesta, co_seccion, co_topico, co_tipo_topico, nu_valor, tx_valor, co_usuario, fe_resultado, co_resultado])
@@ -50,7 +59,7 @@ module.exports = {
         return resultados.rows
     },
     async mostrardetalles (co_resultado) {
-        const select = "SELECT c.co_seccion, c.tx_seccion, b.co_topico, b.tx_topico, a.co_resultado, a.tx_valor, a.nu_valor "
+        const select = "SELECT c.co_seccion, c.tx_seccion, b.co_topico, b.tx_topico, a.co_resultado, a.tx_valor, a.nu_valor, a.co_tipo_topico "
         const from = " FROM t_resultados a, t_topicos b , t_secciones c  "
         let where = " WHERE a.co_resultado = $1 "
         where += " and a.co_topico=b.co_topico and a.co_seccion = b.co_seccion and a.co_encuesta = b.co_encuesta "
